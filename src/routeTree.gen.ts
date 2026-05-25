@@ -9,38 +9,256 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppTeamRouteImport } from './routes/app.team'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppServicesRouteImport } from './routes/app.services'
+import { Route as AppReportsRouteImport } from './routes/app.reports'
+import { Route as AppLeadsRouteImport } from './routes/app.leads'
+import { Route as AppGoalsRouteImport } from './routes/app.goals'
+import { Route as AppFinanceRouteImport } from './routes/app.finance'
+import { Route as AppDemandsRouteImport } from './routes/app.demands'
+import { Route as AppClientsRouteImport } from './routes/app.clients'
+import { Route as AppCalendarRouteImport } from './routes/app.calendar'
+import { Route as AppActivityRouteImport } from './routes/app.activity'
+import { Route as AppClientsClientIdRouteImport } from './routes/app.clients.$clientId'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTeamRoute = AppTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppServicesRoute = AppServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeadsRoute = AppLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGoalsRoute = AppGoalsRouteImport.update({
+  id: '/goals',
+  path: '/goals',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinanceRoute = AppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDemandsRoute = AppDemandsRouteImport.update({
+  id: '/demands',
+  path: '/demands',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClientsRoute = AppClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCalendarRoute = AppCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppActivityRoute = AppActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClientsClientIdRoute = AppClientsClientIdRouteImport.update({
+  id: '/$clientId',
+  path: '/$clientId',
+  getParentRoute: () => AppClientsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/calendar': typeof AppCalendarRoute
+  '/app/clients': typeof AppClientsRouteWithChildren
+  '/app/demands': typeof AppDemandsRoute
+  '/app/finance': typeof AppFinanceRoute
+  '/app/goals': typeof AppGoalsRoute
+  '/app/leads': typeof AppLeadsRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/services': typeof AppServicesRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/team': typeof AppTeamRoute
+  '/app/': typeof AppIndexRoute
+  '/app/clients/$clientId': typeof AppClientsClientIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/calendar': typeof AppCalendarRoute
+  '/app/clients': typeof AppClientsRouteWithChildren
+  '/app/demands': typeof AppDemandsRoute
+  '/app/finance': typeof AppFinanceRoute
+  '/app/goals': typeof AppGoalsRoute
+  '/app/leads': typeof AppLeadsRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/services': typeof AppServicesRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/team': typeof AppTeamRoute
+  '/app': typeof AppIndexRoute
+  '/app/clients/$clientId': typeof AppClientsClientIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/calendar': typeof AppCalendarRoute
+  '/app/clients': typeof AppClientsRouteWithChildren
+  '/app/demands': typeof AppDemandsRoute
+  '/app/finance': typeof AppFinanceRoute
+  '/app/goals': typeof AppGoalsRoute
+  '/app/leads': typeof AppLeadsRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/services': typeof AppServicesRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/team': typeof AppTeamRoute
+  '/app/': typeof AppIndexRoute
+  '/app/clients/$clientId': typeof AppClientsClientIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/activity'
+    | '/app/calendar'
+    | '/app/clients'
+    | '/app/demands'
+    | '/app/finance'
+    | '/app/goals'
+    | '/app/leads'
+    | '/app/reports'
+    | '/app/services'
+    | '/app/settings'
+    | '/app/team'
+    | '/app/'
+    | '/app/clients/$clientId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/app/activity'
+    | '/app/calendar'
+    | '/app/clients'
+    | '/app/demands'
+    | '/app/finance'
+    | '/app/goals'
+    | '/app/leads'
+    | '/app/reports'
+    | '/app/services'
+    | '/app/settings'
+    | '/app/team'
+    | '/app'
+    | '/app/clients/$clientId'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/activity'
+    | '/app/calendar'
+    | '/app/clients'
+    | '/app/demands'
+    | '/app/finance'
+    | '/app/goals'
+    | '/app/leads'
+    | '/app/reports'
+    | '/app/services'
+    | '/app/settings'
+    | '/app/team'
+    | '/app/'
+    | '/app/clients/$clientId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +266,149 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/team': {
+      id: '/app/team'
+      path: '/team'
+      fullPath: '/app/team'
+      preLoaderRoute: typeof AppTeamRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/services': {
+      id: '/app/services'
+      path: '/services'
+      fullPath: '/app/services'
+      preLoaderRoute: typeof AppServicesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/reports': {
+      id: '/app/reports'
+      path: '/reports'
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/leads': {
+      id: '/app/leads'
+      path: '/leads'
+      fullPath: '/app/leads'
+      preLoaderRoute: typeof AppLeadsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/goals': {
+      id: '/app/goals'
+      path: '/goals'
+      fullPath: '/app/goals'
+      preLoaderRoute: typeof AppGoalsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/finance': {
+      id: '/app/finance'
+      path: '/finance'
+      fullPath: '/app/finance'
+      preLoaderRoute: typeof AppFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/demands': {
+      id: '/app/demands'
+      path: '/demands'
+      fullPath: '/app/demands'
+      preLoaderRoute: typeof AppDemandsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/clients': {
+      id: '/app/clients'
+      path: '/clients'
+      fullPath: '/app/clients'
+      preLoaderRoute: typeof AppClientsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/calendar': {
+      id: '/app/calendar'
+      path: '/calendar'
+      fullPath: '/app/calendar'
+      preLoaderRoute: typeof AppCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/activity': {
+      id: '/app/activity'
+      path: '/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AppActivityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/clients/$clientId': {
+      id: '/app/clients/$clientId'
+      path: '/$clientId'
+      fullPath: '/app/clients/$clientId'
+      preLoaderRoute: typeof AppClientsClientIdRouteImport
+      parentRoute: typeof AppClientsRoute
+    }
   }
 }
 
+interface AppClientsRouteChildren {
+  AppClientsClientIdRoute: typeof AppClientsClientIdRoute
+}
+
+const AppClientsRouteChildren: AppClientsRouteChildren = {
+  AppClientsClientIdRoute: AppClientsClientIdRoute,
+}
+
+const AppClientsRouteWithChildren = AppClientsRoute._addFileChildren(
+  AppClientsRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppActivityRoute: typeof AppActivityRoute
+  AppCalendarRoute: typeof AppCalendarRoute
+  AppClientsRoute: typeof AppClientsRouteWithChildren
+  AppDemandsRoute: typeof AppDemandsRoute
+  AppFinanceRoute: typeof AppFinanceRoute
+  AppGoalsRoute: typeof AppGoalsRoute
+  AppLeadsRoute: typeof AppLeadsRoute
+  AppReportsRoute: typeof AppReportsRoute
+  AppServicesRoute: typeof AppServicesRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppTeamRoute: typeof AppTeamRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppActivityRoute: AppActivityRoute,
+  AppCalendarRoute: AppCalendarRoute,
+  AppClientsRoute: AppClientsRouteWithChildren,
+  AppDemandsRoute: AppDemandsRoute,
+  AppFinanceRoute: AppFinanceRoute,
+  AppGoalsRoute: AppGoalsRoute,
+  AppLeadsRoute: AppLeadsRoute,
+  AppReportsRoute: AppReportsRoute,
+  AppServicesRoute: AppServicesRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppTeamRoute: AppTeamRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
