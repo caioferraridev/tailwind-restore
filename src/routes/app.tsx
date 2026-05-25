@@ -4,7 +4,6 @@ import { useAuth } from "@/lib/auth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { NotificationBell } from "@/components/NotificationBell";
-import './index.css'
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BarChart3, Calendar, Users, Sparkles } from "lucide-react";
-import './index.css'
 export const Route = createFileRoute("/")({
   component: Landing,
 });
