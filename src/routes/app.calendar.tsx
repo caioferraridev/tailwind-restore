@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import {
+  useMemo,
+  useState,
+} from "react";
+
+import { useAuth } from "@/lib/auth";
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -40,28 +49,45 @@ import {
 
 import { toast } from "sonner";
 
-export const Route = createFileRoute(
-  "/app/calendar"
-)({
+export const Route = createFileRoute("/app/calendar")({
   component: CalendarPage,
 });
+
+type CalendarEvent = {
+  id: string;
+  title: string;
+  description?: string | null;
+  start_at: string;
+  end_at?: string | null;
+  client_id?: string | null;
+  demand_id?: string | null;
+  assigned_to?: string | null;
+  event_type?: string | null;
+  status?: string | null;
+  clients?: {
+    id: string;
+    company_name: string;
+  } | null;
+};
 
 function CalendarPage() {
   const qc = useQueryClient();
 
-  const [cursor, setCursor] = useState(
-    new Date()
-  );
+  const { user, profile } = useAuth();
 
-  const [selectedDate, setSelectedDate] =
-    useState<Date | null>(null);
+  const [cursor, setCursor] = useState(new Date());
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const [open, setOpen] = useState(false);
 
   const start = new Date(
     cursor.getFullYear(),
     cursor.getMonth(),
-    1
+    1,
+    0,
+    0,
+    0
   );
 
   const end = new Date(
@@ -73,61 +99,68 @@ function CalendarPage() {
     59
   );
 
-  const { data: events = [] } =
-    useQuery({
-      queryKey: [
-        "calendar-events",
-        cursor.getMonth(),
-        cursor.getFullYear(),
-      ],
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: [
+      "calendar-events",
+      cursor.getMonth(),
+      cursor.getFullYear(),
+      profile?.company_id,
+    ],
 
-      queryFn: async () => {
-        const { data, error } =
-          await supabase
-            .from("calendar_events")
-            .select(`
-              *,
-              clients(
-                id,
-                company_name
-              )
-            `)
-            .gte(
-              "start_at",
-              start.toISOString()
-            )
-            .lte(
-              "start_at",
-              end.toISOString()
-            )
-            .order("start_at");
+    enabled: !!profile?.company_id,
 
-        if (error) {
-          throw error;
-        }
-
-        return data || [];
-      },
+    queryFn: async () => {
+      const { data, error } =
+  await supabase
+    .from("calendar_events")
+    .select(`
+      *,
+      client:client_id(
+        id,
+        company_name
+      )
+    `)
+    .gte(
+      "start_at",
+      start.toISOString()
+    )
+    .lte(
+      "start_at",
+      end.toISOString()
+    )
+    .order("start_at", {
+      ascending: true,
     });
 
-  const { data: clients = [] } =
-    useQuery({
-      queryKey: ["calendar-clients"],
+      return (data || []) as CalendarEvent[];
+    },
+  });
 
-      queryFn: async () => {
-        const { data, error } =
-          await supabase
-            .from("clients")
-            .select("id, company_name")
-            .order("company_name");
+  const { data: clients = [] } = useQuery({
+    queryKey: [
+      "calendar-clients",
+      profile?.company_id,
+    ],
 
-        if (error) {
-          throw error;
-        }
+    enabled: !!profile?.company_id,
 
-        return data || [];
-      },
-    });
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id, company_name")
+        .eq("company_id", profile?.company_id)
+        .order("company_name", {
+          ascending: true,
+        });
+
+      if (error) {
+        console.error("CLIENTS ERROR", error);
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
 
   const firstDay = start.getDay();
 
@@ -139,11 +172,7 @@ function CalendarPage() {
     cells.push(null);
   }
 
-  for (
-    let d = 1;
-    d <= daysInMonth;
-    d++
-  ) {
+  for (let d = 1; d <= daysInMonth; d++) {
     cells.push(
       new Date(
         cursor.getFullYear(),
@@ -168,20 +197,22 @@ function CalendarPage() {
   ];
 
   const eventsForDay = (date: Date) =>
-    events.filter((e: any) => {
+    events.filter((e) => {
       const d = new Date(e.start_at);
 
-      return (
-        d.toDateString() ===
-        date.toDateString()
-      );
+      return d.toDateString() === date.toDateString();
     });
 
   const upcomingEvents = useMemo(() => {
     return [...events]
       .filter(
-        (e: any) =>
-          new Date(e.start_at) >= new Date()
+        (e) =>
+          new Date(e.start_at).getTime() >= Date.now()
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.start_at).getTime() -
+          new Date(b.start_at).getTime()
       )
       .slice(0, 5);
   }, [events]);
@@ -207,7 +238,7 @@ function CalendarPage() {
 
     toast.success("Evento excluído");
 
-    qc.invalidateQueries({
+    await qc.invalidateQueries({
       queryKey: ["calendar-events"],
     });
   }
@@ -221,12 +252,11 @@ function CalendarPage() {
           </h1>
 
           <p className="text-muted-foreground mt-1">
-            Agenda profissional da
-            agência
+            Agenda profissional da agência
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant="outline"
             size="icon"
@@ -245,9 +275,7 @@ function CalendarPage() {
 
           <Button
             variant="outline"
-            onClick={() =>
-              setCursor(new Date())
-            }
+            onClick={() => setCursor(new Date())}
           >
             Hoje
           </Button>
@@ -281,12 +309,10 @@ function CalendarPage() {
 
             <CreateEventDialog
               clients={clients}
-              selectedDate={
-                selectedDate
-              }
-              onClose={() =>
-                setOpen(false)
-              }
+              selectedDate={selectedDate}
+              companyId={profile?.company_id}
+              userId={user?.id}
+              onClose={() => setOpen(false)}
             />
           </Dialog>
         </div>
@@ -303,65 +329,51 @@ function CalendarPage() {
 
                 <div>
                   <h2 className="text-2xl font-semibold capitalize">
-                    {cursor.toLocaleDateString(
-                      "pt-BR",
-                      {
-                        month:
-                          "long",
-                        year:
-                          "numeric",
-                      }
-                    )}
+                    {cursor.toLocaleDateString("pt-BR", {
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </h2>
 
                   <p className="text-sm text-muted-foreground">
-                    {
-                      events.length
-                    }{" "}
-                    evento(s)
+                    {events.length} evento(s)
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="hidden md:grid grid-cols-7 gap-px bg-border rounded-2xl overflow-hidden">
-              {weekDays.map((d) => (
-                <div
-                  key={d}
-                  className="bg-muted py-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                >
-                  {d}
-                </div>
-              ))}
+            {isLoading ? (
+              <div className="py-20 text-center text-muted-foreground">
+                Carregando calendário...
+              </div>
+            ) : (
+              <div className="hidden md:grid grid-cols-7 gap-px bg-border rounded-2xl overflow-hidden">
+                {weekDays.map((d) => (
+                  <div
+                    key={d}
+                    className="bg-muted py-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
+                    {d}
+                  </div>
+                ))}
 
-              {cells.map(
-                (date, i) => {
+                {cells.map((date, i) => {
                   const isToday =
                     date &&
                     date.toDateString() ===
                       new Date().toDateString();
 
-                  const dayEvents =
-                    date
-                      ? eventsForDay(
-                          date
-                        )
-                      : [];
+                  const dayEvents = date
+                    ? eventsForDay(date)
+                    : [];
 
                   return (
                     <div
                       key={i}
                       onClick={() => {
-                        if (
-                          date
-                        ) {
-                          setSelectedDate(
-                            date
-                          );
-
-                          setOpen(
-                            true
-                          );
+                        if (date) {
+                          setSelectedDate(date);
+                          setOpen(true);
                         }
                       }}
                       className={`
@@ -371,16 +383,8 @@ function CalendarPage() {
                         transition
                         hover:bg-muted/40
                         cursor-pointer
-                        ${
-                          !date
-                            ? "bg-muted/20"
-                            : ""
-                        }
-                        ${
-                          isToday
-                            ? "ring-2 ring-primary"
-                            : ""
-                        }
+                        ${!date ? "bg-muted/20" : ""}
+                        ${isToday ? "ring-2 ring-primary" : ""}
                       `}
                     >
                       {date && (
@@ -388,80 +392,52 @@ function CalendarPage() {
                           <div className="flex items-center justify-between mb-2">
                             <span
                               className={`text-sm font-semibold ${
-                                isToday
-                                  ? "text-primary"
-                                  : ""
+                                isToday ? "text-primary" : ""
                               }`}
                             >
                               {date.getDate()}
                             </span>
 
-                            {dayEvents.length >
-                              0 && (
+                            {dayEvents.length > 0 && (
                               <Badge variant="secondary">
-                                {
-                                  dayEvents.length
-                                }
+                                {dayEvents.length}
                               </Badge>
                             )}
                           </div>
 
                           <div className="space-y-1.5">
                             {dayEvents
-                              .slice(
-                                0,
-                                4
-                              )
-                              .map(
-                                (
-                                  e: any
-                                ) => (
-                                  <div
-                                    key={
-                                      e.id
-                                    }
-                                    className="rounded-lg bg-primary/10 border border-primary/20 px-2 py-1.5"
-                                  >
-                                    <p className="text-[11px] font-medium text-primary truncate">
+                              .slice(0, 4)
+                              .map((e) => (
+                                <div
+                                  key={e.id}
+                                  className="rounded-lg bg-primary/10 border border-primary/20 px-2 py-1.5"
+                                >
+                                  <p className="text-[11px] font-medium text-primary truncate">
+                                    {e.title}
+                                  </p>
+
+                                  <p className="text-[10px] text-muted-foreground truncate">
+                                    {new Date(
+                                      e.start_at
+                                    ).toLocaleTimeString(
+                                      "pt-BR",
                                       {
-                                        e.title
+                                        hour: "2-digit",
+                                        minute: "2-digit",
                                       }
-                                    </p>
-
-                                    <p className="text-[10px] text-muted-foreground truncate">
-                                      {new Date(
-                                        e.start_at
-                                      ).toLocaleTimeString(
-                                        "pt-BR",
-                                        {
-                                          hour:
-                                            "2-digit",
-                                          minute:
-                                            "2-digit",
-                                        }
-                                      )}
-                                    </p>
-                                  </div>
-                                )
-                              )}
-
-                            {dayEvents.length >
-                              4 && (
-                              <div className="text-[11px] text-muted-foreground">
-                                +
-                                {dayEvents.length -
-                                  4}{" "}
-                                eventos
-                              </div>
-                            )}
+                                    )}
+                                  </p>
+                                </div>
+                              ))}
                           </div>
                         </>
                       )}
                     </div>
                   );
-                }
-              )}
-            </div>
+                })}
+              </div>
+            )}
           </Card>
         </div>
 
@@ -472,59 +448,46 @@ function CalendarPage() {
             </h3>
 
             <div className="space-y-3">
-              {upcomingEvents.length ===
-              0 ? (
+              {upcomingEvents.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Nenhum evento
-                  próximo
+                  Nenhum evento próximo
                 </p>
               ) : (
-                upcomingEvents.map(
-                  (e: any) => (
-                    <div
-                      key={e.id}
-                      className="rounded-xl border p-3"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h4 className="font-medium text-sm">
-                            {e.title}
-                          </h4>
+                upcomingEvents.map((e) => (
+                  <div
+                    key={e.id}
+                    className="rounded-xl border p-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="font-medium text-sm">
+                          {e.title}
+                        </h4>
 
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {
-                              e
-                                ?.clients
-                                ?.company_name
-                            }
-                          </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {e?.clients?.company_name ||
+                            "Sem cliente"}
+                        </p>
 
-                          <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                            <Clock3 className="h-3.5 w-3.5" />
+                        <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
+                          <Clock3 className="h-3.5 w-3.5" />
 
-                            {new Date(
-                              e.start_at
-                            ).toLocaleString(
-                              "pt-BR"
-                            )}
-                          </div>
+                          {new Date(
+                            e.start_at
+                          ).toLocaleString("pt-BR")}
                         </div>
-
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() =>
-                            deleteEvent(
-                              e.id
-                            )
-                          }
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
                       </div>
+
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => deleteEvent(e.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
-                  )
-                )
+                  </div>
+                ))
               )}
             </div>
           </Card>
@@ -538,16 +501,16 @@ function CreateEventDialog({
   clients,
   selectedDate,
   onClose,
+  companyId,
+  userId,
 }: any) {
   const qc = useQueryClient();
 
-  const [saving, setSaving] =
-    useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
     description: "",
-    location: "",
     client_id: "",
     event_type: "reuniao",
 
@@ -579,62 +542,95 @@ function CreateEventDialog({
   ) {
     e.preventDefault();
 
+    if (!companyId) {
+      toast.error("Empresa não encontrada");
+      return;
+    }
+
+    if (!userId) {
+      toast.error("Usuário não encontrado");
+      return;
+    }
+
+    if (!form.title) {
+      toast.error("Informe um título");
+      return;
+    }
+
+    if (!form.start_at) {
+      toast.error("Informe a data inicial");
+      return;
+    }
+
     setSaving(true);
+
+    const payload = {
+      company_id: companyId,
+
+      created_by: userId,
+
+      assigned_to: userId,
+
+      title: form.title,
+
+      description:
+        form.description || null,
+
+      client_id:
+        form.client_id || null,
+
+      event_type: form.event_type,
+
+      start_at: new Date(
+        form.start_at
+      ).toISOString(),
+
+      end_at: form.end_at
+        ? new Date(
+            form.end_at
+          ).toISOString()
+        : null,
+
+      status: "agendado",
+
+      all_day: false,
+
+      recurring: false,
+
+      recurring_type: null,
+
+      color: "#3b82f6",
+
+      observations:
+        form.description || null,
+    };
+
+    console.log(
+      "CALENDAR PAYLOAD",
+      payload
+    );
 
     const { error } = await supabase
       .from("calendar_events")
-      .insert([
-        {
-          title: form.title,
-
-          description:
-            form.description,
-
-          location:
-            form.location,
-
-          client_id:
-            form.client_id || null,
-
-          event_type:
-            form.event_type,
-
-          start_at:
-            form.start_at,
-
-          end_at:
-            form.end_at,
-
-          status: "agendado",
-
-          all_day: false,
-
-          recurring: false,
-
-          recurring_type: null,
-
-          color: "#3b82f6",
-
-          notes: null,
-
-          observations: null,
-        },
-      ]);
+      .insert([payload]);
 
     setSaving(false);
 
     if (error) {
+      console.error(
+        "CALENDAR INSERT ERROR",
+        error
+      );
+
       toast.error(error.message);
       return;
     }
 
-    toast.success(
-      "Evento criado"
-    );
-
-    qc.invalidateQueries({
+    await qc.invalidateQueries({
       queryKey: ["calendar-events"],
     });
+
+    toast.success("Evento criado");
 
     onClose();
   }
@@ -647,10 +643,8 @@ function CreateEventDialog({
         </DialogTitle>
 
         <DialogDescription>
-          Crie reuniões,
-          gravações, visitas,
-          campanhas e tarefas da
-          agência.
+          Crie reuniões, gravações, visitas,
+          campanhas e tarefas.
         </DialogDescription>
       </DialogHeader>
 
@@ -677,7 +671,9 @@ function CreateEventDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label>Cliente</Label>
+            <Label>
+              Cliente
+            </Label>
 
             <Select
               value={form.client_id}
@@ -693,24 +689,22 @@ function CreateEventDialog({
               </SelectTrigger>
 
               <SelectContent>
-                {clients.map(
-                  (c: any) => (
-                    <SelectItem
-                      key={c.id}
-                      value={c.id}
-                    >
-                      {
-                        c.company_name
-                      }
-                    </SelectItem>
-                  )
-                )}
+                {clients.map((c: any) => (
+                  <SelectItem
+                    key={c.id}
+                    value={c.id}
+                  >
+                    {c.company_name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Tipo</Label>
+            <Label>
+              Tipo
+            </Label>
 
             <Select
               value={form.event_type}
@@ -745,14 +739,37 @@ function CreateEventDialog({
                 <SelectItem value="tarefa">
                   Tarefa
                 </SelectItem>
+
+                <SelectItem value="postagem">
+                  Postagem
+                </SelectItem>
+
+                <SelectItem value="financeiro">
+                  Financeiro
+                </SelectItem>
+
+                <SelectItem value="followup">
+                  Follow-up
+                </SelectItem>
+
+                <SelectItem value="interno">
+                  Interno
+                </SelectItem>
+
+                <SelectItem value="entrega">
+                  Entrega
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Início</Label>
+            <Label>
+              Início
+            </Label>
 
             <Input
+              required
               type="datetime-local"
               value={form.start_at}
               onChange={(e) =>
@@ -765,7 +782,9 @@ function CreateEventDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label>Fim</Label>
+            <Label>
+              Fim
+            </Label>
 
             <Input
               type="datetime-local"
@@ -780,29 +799,13 @@ function CreateEventDialog({
           </div>
 
           <div className="space-y-1.5 md:col-span-2">
-            <Label>Local</Label>
-
-            <Input
-              value={form.location}
-              onChange={(e) =>
-                setField(
-                  "location",
-                  e.target.value
-                )
-              }
-            />
-          </div>
-
-          <div className="space-y-1.5 md:col-span-2">
             <Label>
               Descrição
             </Label>
 
             <Textarea
               rows={5}
-              value={
-                form.description
-              }
+              value={form.description}
               onChange={(e) =>
                 setField(
                   "description",
