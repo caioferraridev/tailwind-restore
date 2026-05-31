@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+} from "@tanstack/react-router";
 
 import {
   useQuery,
@@ -30,11 +33,17 @@ import { Label } from "@/components/ui/label";
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { Plus } from "lucide-react";
+import {
+  Plus,
+  ArrowRight,
+  CalendarDays,
+} from "lucide-react";
 
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/app/demands")({
+export const Route = createFileRoute(
+  "/app/demands"
+)({
   component: DemandsPage,
 });
 
@@ -49,13 +58,18 @@ type Demand = {
 
   priority?: string | null;
 
+  due_date?: string | null;
+
   created_at?: string;
 };
 
 function DemandsPage() {
   const { profile } = useAuth();
 
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const [open, setOpen] =
+    useState(false);
 
   const {
     data: demands = [],
@@ -82,33 +96,25 @@ function DemandsPage() {
           });
 
       if (error) {
-        console.error(
-          "DEMANDS ERROR",
-          error
-        );
-
         throw error;
       }
 
-      console.log(
-        "DEMANDS DATA",
-        data
-      );
-
-      return (data || []) as Demand[];
+      return (data ||
+        []) as Demand[];
     },
   });
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Demandas
           </h1>
 
           <p className="text-muted-foreground mt-2">
-            Gerencie demandas da agência
+            Gerencie demandas da
+            agência
           </p>
         </div>
 
@@ -140,33 +146,71 @@ function DemandsPage() {
         </Card>
       ) : demands.length === 0 ? (
         <Card className="p-10 text-center text-muted-foreground">
-          Nenhuma demanda encontrada
+          Nenhuma demanda
+          encontrada
         </Card>
       ) : (
         <div className="grid gap-4">
           {demands.map((demand) => (
-            <Card
+            <div
               key={demand.id}
-              className="p-5"
+              role="button"
+              tabIndex={0}
+              className="cursor-pointer"
+              onClick={() => {
+                navigate({
+                  to: "/app/demands/$demandId",
+                  params: {
+                    demandId:
+                      demand.id,
+                  },
+                });
+              }}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <h2 className="font-semibold text-lg">
-                    {demand.title}
-                  </h2>
+              <Card
+                className="
+                  p-5
+                  transition-all
+                  hover:border-primary/40
+                  hover:shadow-lg
+                "
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-semibold text-lg">
+                        {demand.title}
+                      </h2>
 
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {demand.description ||
-                      "Sem descrição"}
-                  </p>
-                </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
 
-                <div className="text-sm font-medium capitalize">
-                  {demand.status ||
-                    "pendente"}
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {demand.description ||
+                        "Sem descrição"}
+                    </p>
+
+                    {demand.due_date && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                        <CalendarDays className="h-3.5 w-3.5" />
+
+                        Prazo:
+                        {new Date(
+                          demand.due_date
+                        ).toLocaleDateString(
+                          "pt-BR"
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-sm font-medium capitalize whitespace-nowrap">
+                    {demand.status ||
+                      "pendente"}
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           ))}
         </div>
       )}
@@ -191,6 +235,9 @@ function CreateDemandDialog({
     setDescription,
   ] = useState("");
 
+  const [dueDate, setDueDate] =
+    useState("");
+
   async function handleCreate(
     e: React.FormEvent
   ) {
@@ -214,36 +261,56 @@ function CreateDemandDialog({
 
     setSaving(true);
 
-    const payload = {
-      company_id: companyId,
-
-      title,
-
-      description,
-
-      status: "pendente",
-
-      priority: "media",
-    };
-
-    console.log(
-      "DEMAND PAYLOAD",
-      payload
-    );
-
-    const { error } =
+    const { data, error } =
       await supabase
         .from("demands")
-        .insert([payload]);
+        .insert([
+          {
+            company_id: companyId,
+
+            title,
+
+            description,
+
+            due_date:
+              dueDate || null,
+
+            status: "pendente",
+
+            priority: "media",
+          },
+        ])
+        .select()
+        .single();
+
+    if (!error && data?.due_date) {
+      await supabase
+        .from("calendar_events")
+        .insert([
+          {
+            title: data.title,
+
+            description:
+              data.description,
+
+            start_at:
+              data.due_date,
+
+            end_at:
+              data.due_date,
+
+            status: "pendente",
+
+            demand_id: data.id,
+
+            color: "#3b82f6",
+          },
+        ]);
+    }
 
     setSaving(false);
 
     if (error) {
-      console.error(
-        "CREATE DEMAND ERROR",
-        error
-      );
-
       toast.error(error.message);
 
       return;
@@ -256,10 +323,6 @@ function CreateDemandDialog({
     await qc.invalidateQueries({
       queryKey: ["demands"],
     });
-
-    setTitle("");
-
-    setDescription("");
 
     onClose();
   }
@@ -288,7 +351,22 @@ function CreateDemandDialog({
                 e.target.value
               )
             }
-            placeholder="Digite o título da demanda"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>
+            Prazo de entrega
+          </Label>
+
+          <Input
+            type="date"
+            value={dueDate}
+            onChange={(e) =>
+              setDueDate(
+                e.target.value
+              )
+            }
           />
         </div>
 
@@ -305,7 +383,6 @@ function CreateDemandDialog({
                 e.target.value
               )
             }
-            placeholder="Descreva a demanda"
           />
         </div>
 

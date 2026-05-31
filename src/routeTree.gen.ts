@@ -25,6 +25,7 @@ import { Route as AppDemandsRouteImport } from './routes/app.demands'
 import { Route as AppClientsRouteImport } from './routes/app.clients'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
 import { Route as AppActivityRouteImport } from './routes/app.activity'
+import { Route as AppDemandsDemandIdRouteImport } from './routes/app.demands.$demandId'
 import { Route as AppClientsClientIdRouteImport } from './routes/app.clients.$clientId'
 
 const SignupRoute = SignupRouteImport.update({
@@ -107,6 +108,11 @@ const AppActivityRoute = AppActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDemandsDemandIdRoute = AppDemandsDemandIdRouteImport.update({
+  id: '/$demandId',
+  path: '/$demandId',
+  getParentRoute: () => AppDemandsRoute,
+} as any)
 const AppClientsClientIdRoute = AppClientsClientIdRouteImport.update({
   id: '/$clientId',
   path: '/$clientId',
@@ -121,7 +127,7 @@ export interface FileRoutesByFullPath {
   '/app/activity': typeof AppActivityRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/clients': typeof AppClientsRouteWithChildren
-  '/app/demands': typeof AppDemandsRoute
+  '/app/demands': typeof AppDemandsRouteWithChildren
   '/app/finance': typeof AppFinanceRoute
   '/app/goals': typeof AppGoalsRoute
   '/app/leads': typeof AppLeadsRoute
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/app/team': typeof AppTeamRoute
   '/app/': typeof AppIndexRoute
   '/app/clients/$clientId': typeof AppClientsClientIdRoute
+  '/app/demands/$demandId': typeof AppDemandsDemandIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -139,7 +146,7 @@ export interface FileRoutesByTo {
   '/app/activity': typeof AppActivityRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/clients': typeof AppClientsRouteWithChildren
-  '/app/demands': typeof AppDemandsRoute
+  '/app/demands': typeof AppDemandsRouteWithChildren
   '/app/finance': typeof AppFinanceRoute
   '/app/goals': typeof AppGoalsRoute
   '/app/leads': typeof AppLeadsRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/app/team': typeof AppTeamRoute
   '/app': typeof AppIndexRoute
   '/app/clients/$clientId': typeof AppClientsClientIdRoute
+  '/app/demands/$demandId': typeof AppDemandsDemandIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,7 +167,7 @@ export interface FileRoutesById {
   '/app/activity': typeof AppActivityRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/clients': typeof AppClientsRouteWithChildren
-  '/app/demands': typeof AppDemandsRoute
+  '/app/demands': typeof AppDemandsRouteWithChildren
   '/app/finance': typeof AppFinanceRoute
   '/app/goals': typeof AppGoalsRoute
   '/app/leads': typeof AppLeadsRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/app/team': typeof AppTeamRoute
   '/app/': typeof AppIndexRoute
   '/app/clients/$clientId': typeof AppClientsClientIdRoute
+  '/app/demands/$demandId': typeof AppDemandsDemandIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/app/team'
     | '/app/'
     | '/app/clients/$clientId'
+    | '/app/demands/$demandId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/app/team'
     | '/app'
     | '/app/clients/$clientId'
+    | '/app/demands/$demandId'
   id:
     | '__root__'
     | '/'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/app/team'
     | '/app/'
     | '/app/clients/$clientId'
+    | '/app/demands/$demandId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -350,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppActivityRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/demands/$demandId': {
+      id: '/app/demands/$demandId'
+      path: '/$demandId'
+      fullPath: '/app/demands/$demandId'
+      preLoaderRoute: typeof AppDemandsDemandIdRouteImport
+      parentRoute: typeof AppDemandsRoute
+    }
     '/app/clients/$clientId': {
       id: '/app/clients/$clientId'
       path: '/$clientId'
@@ -372,11 +391,23 @@ const AppClientsRouteWithChildren = AppClientsRoute._addFileChildren(
   AppClientsRouteChildren,
 )
 
+interface AppDemandsRouteChildren {
+  AppDemandsDemandIdRoute: typeof AppDemandsDemandIdRoute
+}
+
+const AppDemandsRouteChildren: AppDemandsRouteChildren = {
+  AppDemandsDemandIdRoute: AppDemandsDemandIdRoute,
+}
+
+const AppDemandsRouteWithChildren = AppDemandsRoute._addFileChildren(
+  AppDemandsRouteChildren,
+)
+
 interface AppRouteChildren {
   AppActivityRoute: typeof AppActivityRoute
   AppCalendarRoute: typeof AppCalendarRoute
   AppClientsRoute: typeof AppClientsRouteWithChildren
-  AppDemandsRoute: typeof AppDemandsRoute
+  AppDemandsRoute: typeof AppDemandsRouteWithChildren
   AppFinanceRoute: typeof AppFinanceRoute
   AppGoalsRoute: typeof AppGoalsRoute
   AppLeadsRoute: typeof AppLeadsRoute
@@ -391,7 +422,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppActivityRoute: AppActivityRoute,
   AppCalendarRoute: AppCalendarRoute,
   AppClientsRoute: AppClientsRouteWithChildren,
-  AppDemandsRoute: AppDemandsRoute,
+  AppDemandsRoute: AppDemandsRouteWithChildren,
   AppFinanceRoute: AppFinanceRoute,
   AppGoalsRoute: AppGoalsRoute,
   AppLeadsRoute: AppLeadsRoute,
