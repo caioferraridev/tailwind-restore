@@ -1,7 +1,4 @@
-import {
-  createFileRoute,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import {
   useQuery,
@@ -15,7 +12,6 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
 import { Card } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button";
 
 import {
@@ -35,41 +31,30 @@ import { Textarea } from "@/components/ui/textarea";
 
 import {
   Plus,
-  ArrowRight,
   CalendarDays,
 } from "lucide-react";
 
 import { toast } from "sonner";
 
-export const Route = createFileRoute(
-  "/app/demands"
-)({
+export const Route = createFileRoute("/app/demands")({
   component: DemandsPage,
 });
 
 type Demand = {
   id: string;
-
-  title: string;
-
+  name: string;
   description?: string | null;
-
   status?: string | null;
-
   priority?: string | null;
-
-  due_date?: string | null;
-
+  delivery_date?: string | null;
   created_at?: string;
 };
 
 function DemandsPage() {
   const { profile } = useAuth();
+  console.log("PROFILE", profile);
 
-  const navigate = useNavigate();
-
-  const [open, setOpen] =
-    useState(false);
+  const [open, setOpen] = useState(false);
 
   const {
     data: demands = [],
@@ -96,11 +81,15 @@ function DemandsPage() {
           });
 
       if (error) {
+        console.error(
+          "DEMANDS ERROR",
+          error
+        );
+
         throw error;
       }
 
-      return (data ||
-        []) as Demand[];
+      return (data || []) as Demand[];
     },
   });
 
@@ -113,8 +102,7 @@ function DemandsPage() {
           </h1>
 
           <p className="text-muted-foreground mt-2">
-            Gerencie demandas da
-            agência
+            Gerencie demandas da agência
           </p>
         </div>
 
@@ -146,71 +134,46 @@ function DemandsPage() {
         </Card>
       ) : demands.length === 0 ? (
         <Card className="p-10 text-center text-muted-foreground">
-          Nenhuma demanda
-          encontrada
+          Nenhuma demanda encontrada
         </Card>
       ) : (
         <div className="grid gap-4">
           {demands.map((demand) => (
-            <div
+            <Card
               key={demand.id}
-              role="button"
-              tabIndex={0}
-              className="cursor-pointer"
-              onClick={() => {
-                navigate({
-                  to: "/app/demands/$demandId",
-                  params: {
-                    demandId:
-                      demand.id,
-                  },
-                });
-              }}
+              className="p-5"
             >
-              <Card
-                className="
-                  p-5
-                  transition-all
-                  hover:border-primary/40
-                  hover:shadow-lg
-                "
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-semibold text-lg">
-                        {demand.title}
-                      </h2>
+              <div className="space-y-2">
+                <h2 className="font-semibold text-lg">
+                  {demand.name}
+                </h2>
 
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {demand.description ||
+                    "Sem descrição"}
+                </p>
 
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {demand.description ||
-                        "Sem descrição"}
-                    </p>
+                {demand.delivery_date && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CalendarDays className="h-3.5 w-3.5" />
 
-                    {demand.due_date && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
-                        <CalendarDays className="h-3.5 w-3.5" />
-
-                        Prazo:
-                        {new Date(
-                          demand.due_date
-                        ).toLocaleDateString(
-                          "pt-BR"
-                        )}
-                      </div>
+                    Prazo:
+                    {" "}
+                    {new Date(
+                      demand.delivery_date
+                    ).toLocaleDateString(
+                      "pt-BR"
                     )}
                   </div>
+                )}
 
-                  <div className="text-sm font-medium capitalize whitespace-nowrap">
-                    {demand.status ||
-                      "pendente"}
-                  </div>
+                <div className="text-sm font-medium">
+                  Status:
+                  {" "}
+                  {demand.status}
                 </div>
-              </Card>
-            </div>
+              </div>
+            </Card>
           ))}
         </div>
       )}
@@ -222,12 +185,13 @@ function CreateDemandDialog({
   companyId,
   onClose,
 }: any) {
-  const qc = useQueryClient();
+  const qc =
+    useQueryClient();
 
   const [saving, setSaving] =
     useState(false);
 
-  const [title, setTitle] =
+  const [name, setName] =
     useState("");
 
   const [
@@ -235,97 +199,90 @@ function CreateDemandDialog({
     setDescription,
   ] = useState("");
 
-  const [dueDate, setDueDate] =
-    useState("");
+  const [
+    deliveryDate,
+    setDeliveryDate,
+  ] = useState("");
 
   async function handleCreate(
-    e: React.FormEvent
-  ) {
-    e.preventDefault();
+  e: React.FormEvent
+) {
+  e.preventDefault();
+console.log("COMPANY ID", companyId);
+  if (!companyId) {
+    toast.error(
+      "Empresa não encontrada"
+    );
+    return;
+  }
 
-    if (!companyId) {
-      toast.error(
-        "Empresa não encontrada"
-      );
+  if (!name.trim()) {
+    toast.error(
+      "Informe um nome"
+    );
+    return;
+  }
 
-      return;
+  setSaving(true);
+
+  console.log(
+    "CRIANDO DEMANDA",
+    {
+      company_id: companyId,
+      name,
+      description,
+      delivery_date:
+        deliveryDate || null,
+      status: "pending",
+      priority: "medium",
     }
+  );
 
-    if (!title) {
-      toast.error(
-        "Informe um título"
-      );
+  const { error } =
+    await supabase
+      .from("demands")
+      .insert([
+        {
+          company_id: companyId,
+          name: name.trim(),
+          description:
+            description || null,
+          delivery_date:
+            deliveryDate || null,
+          status: "pending",
+          priority: "medium",
+        } as any,
+      ]);
 
-      return;
-    }
+  setSaving(false);
 
-    setSaving(true);
-
-    const { data, error } =
-      await supabase
-        .from("demands")
-        .insert([
-          {
-            company_id: companyId,
-
-            title,
-
-            description,
-
-            due_date:
-              dueDate || null,
-
-            status: "pendente",
-
-            priority: "media",
-          },
-        ])
-        .select()
-        .single();
-
-    if (!error && data?.due_date) {
-      await supabase
-        .from("calendar_events")
-        .insert([
-          {
-            title: data.title,
-
-            description:
-              data.description,
-
-            start_at:
-              data.due_date,
-
-            end_at:
-              data.due_date,
-
-            status: "pendente",
-
-            demand_id: data.id,
-
-            color: "#3b82f6",
-          },
-        ]);
-    }
-
-    setSaving(false);
-
-    if (error) {
-      toast.error(error.message);
-
-      return;
-    }
-
-    toast.success(
-      "Demanda criada"
+  if (error) {
+    console.error(
+      "CREATE DEMAND ERROR",
+      error
     );
 
-    await qc.invalidateQueries({
-      queryKey: ["demands"],
-    });
+    toast.error(
+      error.message
+    );
 
-    onClose();
+    return;
   }
+
+  toast.success(
+    "Demanda criada"
+  );
+
+  await qc.invalidateQueries({
+    queryKey: ["demands"],
+  });
+
+  setName("");
+  setDescription("");
+  setDeliveryDate("");
+
+  onClose();
+}
 
   return (
     <DialogContent className="max-w-xl">
@@ -340,14 +297,12 @@ function CreateDemandDialog({
         className="space-y-4"
       >
         <div className="space-y-2">
-          <Label>
-            Título
-          </Label>
+          <Label>Nome</Label>
 
           <Input
-            value={title}
+            value={name}
             onChange={(e) =>
-              setTitle(
+              setName(
                 e.target.value
               )
             }
@@ -356,14 +311,14 @@ function CreateDemandDialog({
 
         <div className="space-y-2">
           <Label>
-            Prazo de entrega
+            Data de entrega
           </Label>
 
           <Input
             type="date"
-            value={dueDate}
+            value={deliveryDate}
             onChange={(e) =>
-              setDueDate(
+              setDeliveryDate(
                 e.target.value
               )
             }
