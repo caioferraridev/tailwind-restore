@@ -8,6 +8,10 @@ import { NotificationBell } from "@/components/NotificationBell";
 export const Route = createFileRoute("/app")({
   component: AppLayout,
 });
+<head>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#000000" />
+</head>
 
 function AppLayout() {
   const { user, loading } = useAuth();
