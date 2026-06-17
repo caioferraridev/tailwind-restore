@@ -106,20 +106,75 @@ function ClientHeader({ client, companyId, onChange, onArchive, onDelete }: any)
   const [uploading, setUploading] = useState(false);
 
   async function handleLogo(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file || !companyId) return;
-    setUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `${companyId}/${client.id}-${Date.now()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("client-logos").upload(path, file, { upsert: true });
-    if (upErr) { setUploading(false); return toast.error(upErr.message); }
-    const { data: pub } = supabase.storage.from("client-logos").getPublicUrl(path);
-    const { error } = await supabase.from("clients").update({ logo_url: pub.publicUrl }).eq("id", client.id);
-    setUploading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Logo atualizada");
-    onChange();
+  const file = e.target.files?.[0];
+
+  if (!file || !companyId) return;
+
+  // Aceita apenas formatos mais seguros
+  const allowedTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    toast.error("Utilize apenas JPG, PNG ou WEBP.");
+    return;
   }
+
+  setUploading(true);
+
+  try {
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+
+    const path = `${companyId}/${client.id}-${Date.now()}.${ext}`;
+
+    console.log("Enviando arquivo:", {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      path,
+    });
+
+    const { error: upErr } = await supabase.storage
+      .from("client-logos")
+      .upload(path, file, {
+        upsert: true,
+      });
+
+    if (upErr) {
+      console.error("ERRO UPLOAD:", upErr);
+      toast.error(`Erro no upload: ${upErr.message}`);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("client-logos")
+      .getPublicUrl(path);
+
+    const { error: updateErr } = await supabase
+      .from("clients")
+      .update({
+        logo_url: data.publicUrl,
+      })
+      .eq("id", client.id);
+
+    if (updateErr) {
+      console.error("ERRO UPDATE CLIENT:", updateErr);
+      toast.error(`Erro ao salvar logo: ${updateErr.message}`);
+      return;
+    }
+
+    toast.success("Logo atualizada com sucesso!");
+    onChange();
+  } catch (err) {
+    console.error("ERRO GERAL:", err);
+    toast.error("Erro inesperado ao enviar a logo.");
+  } finally {
+    setUploading(false);
+  }
+}
 
   return (
     <Card className="p-6">
@@ -133,7 +188,13 @@ function ClientHeader({ client, companyId, onChange, onArchive, onDelete }: any)
             <button onClick={() => fileRef.current?.click()} className="absolute inset-0 rounded-xl bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
               <Upload className="h-4 w-4 mr-1" /> {uploading ? "..." : "Trocar"}
             </button>
-            <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleLogo} />
+            <input
+  ref={fileRef}
+  type="file"
+  accept=".jpg,.jpeg,.png,.webp"
+  hidden
+  onChange={handleLogo}
+/>
           </div>
         </div>
 

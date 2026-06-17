@@ -169,9 +169,13 @@ function TxDialog({ companyId, onClose }: { companyId?: string; onClose: () => v
     });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("Lançamento criado!");
-    qc.invalidateQueries({ queryKey: ["finance"] });
-    onClose();
+  toast.success("Lançamento criado!");
+
+  onClose();
+
+  setTimeout(() => {
+  qc.invalidateQueries({ queryKey: ["finance"] });
+  }, 100);
   }
 
   return (
@@ -194,7 +198,7 @@ function TxDialog({ companyId, onClose }: { companyId?: string; onClose: () => v
                 <SelectItem value="pendente">Pendente</SelectItem>
                 <SelectItem value="pago">Pago</SelectItem>
                 <SelectItem value="atrasado">Atrasado</SelectItem>
-                <SelectItem value="cancelado">Cancelado</SelectItem>
+                <SelectItem value="cancelled">Cancelado</SelectItem>
               </SelectContent>
             </Select></div>
           <div className="space-y-1.5 sm:col-span-2"><Label>Descrição *</Label>

@@ -134,7 +134,7 @@ function LeadFormDialog({ companyId, onClose }: { companyId?: string; onClose: (
   const [form, setForm] = useState({
     name: "", company_name: "", email: "", phone: "", whatsapp: "",
     source: "", segment: "", estimated_value: "", status: "novo",
-    priority: "media", notes: "",
+    priority: "medium", notes: "",
   });
   const [saving, setSaving] = useState(false);
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -194,9 +194,9 @@ function LeadFormDialog({ companyId, onClose }: { companyId?: string; onClose: (
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="baixa">Baixa</SelectItem>
-                <SelectItem value="media">Média</SelectItem>
-                <SelectItem value="alta">Alta</SelectItem>
-                <SelectItem value="urgente">Urgente</SelectItem>
+                <SelectItem value="medium">Média</SelectItem>
+                <SelectItem value="high">Alta</SelectItem>
+                <SelectItem value="urgent">Urgente</SelectItem>
               </SelectContent>
             </Select></div>
           <div className="space-y-1.5 sm:col-span-2"><Label>Observações</Label>

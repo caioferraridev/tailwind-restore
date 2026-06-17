@@ -86,7 +86,7 @@ function ServicesPage() {
 
 function ServiceFormDialog({ companyId, onClose }: { companyId?: string; onClose: () => void }) {
   const qc = useQueryClient();
-  const [form, setForm] = useState({ name: "", category: "", description: "", default_value: "", estimated_time: "", priority: "media" as const });
+  const [form, setForm] = useState({ name: "", category: "", description: "", default_value: "", estimated_time: "", priority: "medium" as const });
   const [saving, setSaving] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
@@ -127,10 +127,10 @@ function ServiceFormDialog({ companyId, onClose }: { companyId?: string; onClose
             <Select value={form.priority} onValueChange={(v) => set("priority", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="baixa">Baixa</SelectItem>
-                <SelectItem value="media">Média</SelectItem>
-                <SelectItem value="alta">Alta</SelectItem>
-                <SelectItem value="urgente">Urgente</SelectItem>
+                <SelectItem value="low">Baixa</SelectItem>
+                <SelectItem value="medium">Média</SelectItem>
+                <SelectItem value="high">Alta</SelectItem>
+                <SelectItem value="urgent">Urgente</SelectItem>
               </SelectContent>
             </Select></div>
         </div>

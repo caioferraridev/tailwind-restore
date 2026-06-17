@@ -52,7 +52,10 @@ type Demand = {
 
 function DemandsPage() {
   const { profile } = useAuth();
-  console.log("PROFILE", profile);
+  console.log("PROFILE COMPLETO");
+console.log(profile);
+console.log("PROFILE COMPANY ID");
+console.log(profile?.company_id);
 
   const [open, setOpen] = useState(false);
 
