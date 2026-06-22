@@ -32,13 +32,25 @@ function LeadsPage() {
   const [open, setOpen] = useState(false);
 
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ["leads"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+  queryKey: ["leads", profile?.company_id],
+  enabled: !!profile?.company_id,
+
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .eq("company_id", profile?.company_id)
+      .order("created_at", { ascending: false });
+
+    console.log("LEADS:", data);
+    console.log("ERROR:", error);
+    console.log("COMPANY:", profile?.company_id);
+
+    if (error) throw error;
+
+    return data ?? [];
+  },
+});
 
   async function moveStage(id: string, status: string) {
     const { error } = await supabase.from("leads").update({ status: status as never }).eq("id", id);
