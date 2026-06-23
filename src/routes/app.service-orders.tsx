@@ -364,7 +364,7 @@ function OSFormDialog({
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label>Data agendada</Label>
+            <Label>Data de entrega</Label>
             <Input type="date" value={form.delivery_date}
               onChange={(e) => set("delivery_date", e.target.value)} />
           </div>
@@ -482,7 +482,7 @@ function OSViewDialog({ id, onClose }: { id: string; onClose: () => void }) {
           <DataRow label="Status" value={sm.label} />
           <DataRow label="Equipamento" value={meta.equipment || "—"} />
           <DataRow label="Número de série" value={meta.serial_number || "—"} />
-          <DataRow label="Data agendada"
+          <DataRow label="Data de entrega"
             value={os.delivery_date ? new Date(os.delivery_date).toLocaleDateString("pt-BR") : "—"} />
           <DataRow label="Valor" value={brl(Number(os.value || 0))} />
           <DataRow label="Observações" value={meta.observations || "—"} />
@@ -784,10 +784,10 @@ function PdfTab({
 <div class="grid">
   <div><strong>Cliente:</strong> ${os.clients?.company_name || "—"}</div>
   <div><strong>Status:</strong> ${STATUS_META[(os.status as OSStatus) || "pendente"].label}</div>
-  <div><strong>Data agendada:</strong> ${os.delivery_date ? new Date(os.delivery_date).toLocaleDateString("pt-BR") : "—"}</div>
+  <div><strong>Data de entrega:</strong> ${os.delivery_date ? new Date(os.delivery_date).toLocaleDateString("pt-BR") : "—"}</div>
   <div><strong>Equipamento:</strong> ${meta.equipment || "—"}</div>
   <div><strong>Nº de série:</strong> ${meta.serial_number || "—"}</div>
-  <div><strong>Título:</strong> ${escapeHtml(os.name)}</div>
+  <div><strong>Nome:</strong> ${escapeHtml(os.name)}</div>
 </div>
 <div class="box"><strong>Descrição</strong><div>${escapeHtml(os.description || "—")}</div></div>
 ${items.length ? `<div class="box"><strong>Itens</strong>
