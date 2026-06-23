@@ -17,6 +17,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTeamRouteImport } from './routes/app.team'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppServicesRouteImport } from './routes/app.services'
+import { Route as AppServiceOrdersRouteImport } from './routes/app.service-orders'
 import { Route as AppReportsRouteImport } from './routes/app.reports'
 import { Route as AppLeadsRouteImport } from './routes/app.leads'
 import { Route as AppGoalsRouteImport } from './routes/app.goals'
@@ -67,6 +68,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
 const AppServicesRoute = AppServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppServiceOrdersRoute = AppServiceOrdersRouteImport.update({
+  id: '/service-orders',
+  path: '/service-orders',
   getParentRoute: () => AppRoute,
 } as any)
 const AppReportsRoute = AppReportsRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/app/goals': typeof AppGoalsRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/reports': typeof AppReportsRoute
+  '/app/service-orders': typeof AppServiceOrdersRoute
   '/app/services': typeof AppServicesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/team': typeof AppTeamRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/app/goals': typeof AppGoalsRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/reports': typeof AppReportsRoute
+  '/app/service-orders': typeof AppServiceOrdersRoute
   '/app/services': typeof AppServicesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/team': typeof AppTeamRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/app/goals': typeof AppGoalsRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/reports': typeof AppReportsRoute
+  '/app/service-orders': typeof AppServiceOrdersRoute
   '/app/services': typeof AppServicesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/team': typeof AppTeamRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/app/goals'
     | '/app/leads'
     | '/app/reports'
+    | '/app/service-orders'
     | '/app/services'
     | '/app/settings'
     | '/app/team'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/app/goals'
     | '/app/leads'
     | '/app/reports'
+    | '/app/service-orders'
     | '/app/services'
     | '/app/settings'
     | '/app/team'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/app/goals'
     | '/app/leads'
     | '/app/reports'
+    | '/app/service-orders'
     | '/app/services'
     | '/app/settings'
     | '/app/team'
@@ -314,6 +326,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/app/services'
       preLoaderRoute: typeof AppServicesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/service-orders': {
+      id: '/app/service-orders'
+      path: '/service-orders'
+      fullPath: '/app/service-orders'
+      preLoaderRoute: typeof AppServiceOrdersRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/reports': {
@@ -431,6 +450,7 @@ interface AppRouteChildren {
   AppGoalsRoute: typeof AppGoalsRoute
   AppLeadsRoute: typeof AppLeadsRoute
   AppReportsRoute: typeof AppReportsRoute
+  AppServiceOrdersRoute: typeof AppServiceOrdersRoute
   AppServicesRoute: typeof AppServicesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTeamRoute: typeof AppTeamRoute
@@ -446,6 +466,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppGoalsRoute: AppGoalsRoute,
   AppLeadsRoute: AppLeadsRoute,
   AppReportsRoute: AppReportsRoute,
+  AppServiceOrdersRoute: AppServiceOrdersRoute,
   AppServicesRoute: AppServicesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTeamRoute: AppTeamRoute,
