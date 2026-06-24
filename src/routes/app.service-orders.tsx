@@ -104,11 +104,11 @@ function ServiceOrdersPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("service_orders")
-        .select("*, clients!client_id(company_name, contact_whatsapp)")
+  .select("*")
         .eq("company_id", profile!.company_id!)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data || []).filter((d: any) => isOS(d.notes));
+      return data || [];
     },
   });
 
@@ -168,10 +168,13 @@ function ServiceOrdersPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((d: any) => {
-            const meta = parseMeta(d.notes);
-            const status = (d.status as OSStatus) || "pendente";
-            const sm = STATUS_META[status] || STATUS_META.pendente;
-            return (
+  console.log("OS", d);
+
+  const meta = parseMeta(d.notes);
+  const status = (d.status as OSStatus) || "pendente";
+  const sm = STATUS_META[status] || STATUS_META.pendente;
+console.log("OS", d);
+  return (
               <Card
                 key={d.id}
                 className="p-5 hover:shadow-[var(--shadow-elegant)] transition-shadow flex flex-col gap-3"
@@ -311,7 +314,9 @@ function OSFormDialog({
       delivery_date: form.delivery_date || null,
       value: form.value ? Number(form.value) : null,
       status: form.status,
-      notes: JSON.stringify(meta),
+      notes: JSON.stringify({
+    _os: true
+  }),
     };
 
     let error;
@@ -320,6 +325,7 @@ function OSFormDialog({
     } else {
       payload.company_id = companyId;
       ({ error } = await supabase.from("service_orders").insert(payload));
+      
     }
     setSaving(false);
     if (error) return toast.error(error.message);
