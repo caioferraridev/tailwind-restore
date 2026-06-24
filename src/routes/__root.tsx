@@ -32,6 +32,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="pt-BR">
       <head><HeadContent /></head>
       <body>{children}<Scripts /></body>
+      <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     </html>
   );
 }
