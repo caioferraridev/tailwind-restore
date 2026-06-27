@@ -898,7 +898,7 @@ function ObservationDialog({ clientId, companyId, authorId, editing, onClose, on
           <div><Label>Categoria</Label><Select value={form.category} onValueChange={(v) => set("category", v)}><SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{["geral","comercial","operacional","financeiro","estrategico"].map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
           <div><Label>Prioridade</Label><Select value={form.priority} onValueChange={(v) => set("priority", v)}><SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{["baixa","media","alta","urgente"].map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+            <SelectContent>{["low","medium","high","urgent"].map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
         </div>
         <DialogFooter><Button type="button" variant="outline" onClick={onClose}>Cancelar</Button><Button type="submit">Salvar</Button></DialogFooter>
       </form>
