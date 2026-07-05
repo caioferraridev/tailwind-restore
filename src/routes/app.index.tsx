@@ -12,7 +12,11 @@ export const Route = createFileRoute("/app/")({
 
 function Dashboard() {
   const { profile } = useAuth();
+  console.log("PROFILE:");
+  console.log(profile);
 
+  console.log("COMPANY_ID:");
+  console.log(profile?.company_id);
   const { data: stats } = useQuery({
     queryKey: ["dashboard-stats", profile?.company_id],
     enabled: !!profile?.company_id,
