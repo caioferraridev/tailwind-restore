@@ -29,9 +29,17 @@ function Dashboard() {
       ]);
       const activeClients = (clients.data || []).filter((c) => c.status === "ativo");
       const monthlyRevenue = activeClients.reduce((sum, c) => sum + Number(c.monthly_value || 0), 0);
-      const pendingDemands = (demands.data || []).filter((d) => d.status === "pendente" || d.status === "em_andamento").length;
-      const lateDemands = (demands.data || []).filter((d) => d.delivery_date && new Date(d.delivery_date) < new Date() && d.status !== "finalizado").length;
-      return {
+     const pendingDemands =
+  (demands.data || []).filter(
+    (d) =>
+      d.status === "pending" ||
+      d.status === "em_revisao"
+  ).length;
+    const lateDemands =
+  (demands.data || []).filter(
+    (d) => d.status === "delayed"
+  ).length;
+  return {
         totalClients: activeClients.length,
         totalServices: services.count || 0,
         monthlyRevenue,
