@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Archive, Trash2, Upload, Plus, Phone, Mail, MessageCircle, Pencil, Calendar as CalIcon, FileText, Download } from "lucide-react";
 import { toast } from "sonner";
-
+import PortalCard from "@/components/client-portal/PortalCard";
 export const Route = createFileRoute("/app/clients/$clientId")({
   component: ClientHubPage,
 });
@@ -67,9 +67,23 @@ function ClientHubPage() {
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link to="/app/clients"><ArrowLeft className="h-4 w-4 mr-1" /> Clientes</Link>
       </Button>
+      <ClientHeader
+  client={client}
+  companyId={profile?.company_id}
+  onChange={() =>
+    qc.invalidateQueries({ queryKey: ["client", clientId] })
+  }
+  onArchive={handleArchive}
+  onDelete={handleDelete}
+/>
 
-      <ClientHeader client={client} companyId={profile?.company_id} onChange={() => qc.invalidateQueries({ queryKey: ["client", clientId] })} onArchive={handleArchive} onDelete={handleDelete} />
+{/* PORTAL DO CLIENTE */}
+<PortalCard
+    clientId={clientId}
+/>
 
+<Tabs defaultValue="overview" className="space-y-4"></Tabs>
+    
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
@@ -982,6 +996,9 @@ function FilesTab({ clientId, companyId }: any) {
           </ul>
         </Card>
       )}
+      <PortalCard
+    clientId={clientId}
+/>
     </div>
   );
 }
