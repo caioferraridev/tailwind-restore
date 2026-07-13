@@ -10,10 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as PortalServicesRouteImport } from './routes/portal.services'
+import { Route as PortalProfileRouteImport } from './routes/portal.profile'
+import { Route as PortalPaymentsRouteImport } from './routes/portal.payments'
+import { Route as PortalObservationsRouteImport } from './routes/portal.observations'
+import { Route as PortalLoginRouteImport } from './routes/portal.login'
+import { Route as PortalFinanceRouteImport } from './routes/portal.finance'
+import { Route as PortalFilesRouteImport } from './routes/portal.files'
+import { Route as PortalDemandsRouteImport } from './routes/portal.demands'
+import { Route as PortalCalendarRouteImport } from './routes/portal.calendar'
 import { Route as AppTeamRouteImport } from './routes/app.team'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppServicesRouteImport } from './routes/app.services'
@@ -35,6 +46,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -50,10 +66,60 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalRoute,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const PortalServicesRoute = PortalServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalProfileRoute = PortalProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalPaymentsRoute = PortalPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalObservationsRoute = PortalObservationsRouteImport.update({
+  id: '/observations',
+  path: '/observations',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalLoginRoute = PortalLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalFinanceRoute = PortalFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalFilesRoute = PortalFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalDemandsRoute = PortalDemandsRouteImport.update({
+  id: '/demands',
+  path: '/demands',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCalendarRoute = PortalCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => PortalRoute,
 } as any)
 const AppTeamRoute = AppTeamRouteImport.update({
   id: '/team',
@@ -135,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/portal': typeof PortalRouteWithChildren
   '/signup': typeof SignupRoute
   '/app/activity': typeof AppActivityRoute
   '/app/calendar': typeof AppCalendarRoute
@@ -148,7 +215,17 @@ export interface FileRoutesByFullPath {
   '/app/services': typeof AppServicesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/team': typeof AppTeamRoute
+  '/portal/calendar': typeof PortalCalendarRoute
+  '/portal/demands': typeof PortalDemandsRoute
+  '/portal/files': typeof PortalFilesRoute
+  '/portal/finance': typeof PortalFinanceRoute
+  '/portal/login': typeof PortalLoginRoute
+  '/portal/observations': typeof PortalObservationsRoute
+  '/portal/payments': typeof PortalPaymentsRoute
+  '/portal/profile': typeof PortalProfileRoute
+  '/portal/services': typeof PortalServicesRoute
   '/app/': typeof AppIndexRoute
+  '/portal/': typeof PortalIndexRoute
   '/app/clients/$clientId': typeof AppClientsClientIdRoute
   '/app/demands/$demandId': typeof AppDemandsDemandIdRoute
   '/app/clients/': typeof AppClientsIndexRoute
@@ -168,7 +245,17 @@ export interface FileRoutesByTo {
   '/app/services': typeof AppServicesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/team': typeof AppTeamRoute
+  '/portal/calendar': typeof PortalCalendarRoute
+  '/portal/demands': typeof PortalDemandsRoute
+  '/portal/files': typeof PortalFilesRoute
+  '/portal/finance': typeof PortalFinanceRoute
+  '/portal/login': typeof PortalLoginRoute
+  '/portal/observations': typeof PortalObservationsRoute
+  '/portal/payments': typeof PortalPaymentsRoute
+  '/portal/profile': typeof PortalProfileRoute
+  '/portal/services': typeof PortalServicesRoute
   '/app': typeof AppIndexRoute
+  '/portal': typeof PortalIndexRoute
   '/app/clients/$clientId': typeof AppClientsClientIdRoute
   '/app/demands/$demandId': typeof AppDemandsDemandIdRoute
   '/app/clients': typeof AppClientsIndexRoute
@@ -178,6 +265,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/portal': typeof PortalRouteWithChildren
   '/signup': typeof SignupRoute
   '/app/activity': typeof AppActivityRoute
   '/app/calendar': typeof AppCalendarRoute
@@ -191,7 +279,17 @@ export interface FileRoutesById {
   '/app/services': typeof AppServicesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/team': typeof AppTeamRoute
+  '/portal/calendar': typeof PortalCalendarRoute
+  '/portal/demands': typeof PortalDemandsRoute
+  '/portal/files': typeof PortalFilesRoute
+  '/portal/finance': typeof PortalFinanceRoute
+  '/portal/login': typeof PortalLoginRoute
+  '/portal/observations': typeof PortalObservationsRoute
+  '/portal/payments': typeof PortalPaymentsRoute
+  '/portal/profile': typeof PortalProfileRoute
+  '/portal/services': typeof PortalServicesRoute
   '/app/': typeof AppIndexRoute
+  '/portal/': typeof PortalIndexRoute
   '/app/clients/$clientId': typeof AppClientsClientIdRoute
   '/app/demands/$demandId': typeof AppDemandsDemandIdRoute
   '/app/clients/': typeof AppClientsIndexRoute
@@ -202,6 +300,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/portal'
     | '/signup'
     | '/app/activity'
     | '/app/calendar'
@@ -215,7 +314,17 @@ export interface FileRouteTypes {
     | '/app/services'
     | '/app/settings'
     | '/app/team'
+    | '/portal/calendar'
+    | '/portal/demands'
+    | '/portal/files'
+    | '/portal/finance'
+    | '/portal/login'
+    | '/portal/observations'
+    | '/portal/payments'
+    | '/portal/profile'
+    | '/portal/services'
     | '/app/'
+    | '/portal/'
     | '/app/clients/$clientId'
     | '/app/demands/$demandId'
     | '/app/clients/'
@@ -235,7 +344,17 @@ export interface FileRouteTypes {
     | '/app/services'
     | '/app/settings'
     | '/app/team'
+    | '/portal/calendar'
+    | '/portal/demands'
+    | '/portal/files'
+    | '/portal/finance'
+    | '/portal/login'
+    | '/portal/observations'
+    | '/portal/payments'
+    | '/portal/profile'
+    | '/portal/services'
     | '/app'
+    | '/portal'
     | '/app/clients/$clientId'
     | '/app/demands/$demandId'
     | '/app/clients'
@@ -244,6 +363,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/portal'
     | '/signup'
     | '/app/activity'
     | '/app/calendar'
@@ -257,7 +377,17 @@ export interface FileRouteTypes {
     | '/app/services'
     | '/app/settings'
     | '/app/team'
+    | '/portal/calendar'
+    | '/portal/demands'
+    | '/portal/files'
+    | '/portal/finance'
+    | '/portal/login'
+    | '/portal/observations'
+    | '/portal/payments'
+    | '/portal/profile'
+    | '/portal/services'
     | '/app/'
+    | '/portal/'
     | '/app/clients/$clientId'
     | '/app/demands/$demandId'
     | '/app/clients/'
@@ -267,6 +397,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PortalRoute: typeof PortalRouteWithChildren
   SignupRoute: typeof SignupRoute
 }
 
@@ -277,6 +408,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -300,12 +438,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/': {
+      id: '/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/app/': {
       id: '/app/'
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/portal/services': {
+      id: '/portal/services'
+      path: '/services'
+      fullPath: '/portal/services'
+      preLoaderRoute: typeof PortalServicesRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/profile': {
+      id: '/portal/profile'
+      path: '/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof PortalProfileRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/payments': {
+      id: '/portal/payments'
+      path: '/payments'
+      fullPath: '/portal/payments'
+      preLoaderRoute: typeof PortalPaymentsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/observations': {
+      id: '/portal/observations'
+      path: '/observations'
+      fullPath: '/portal/observations'
+      preLoaderRoute: typeof PortalObservationsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/login': {
+      id: '/portal/login'
+      path: '/login'
+      fullPath: '/portal/login'
+      preLoaderRoute: typeof PortalLoginRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/finance': {
+      id: '/portal/finance'
+      path: '/finance'
+      fullPath: '/portal/finance'
+      preLoaderRoute: typeof PortalFinanceRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/files': {
+      id: '/portal/files'
+      path: '/files'
+      fullPath: '/portal/files'
+      preLoaderRoute: typeof PortalFilesRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/demands': {
+      id: '/portal/demands'
+      path: '/demands'
+      fullPath: '/portal/demands'
+      preLoaderRoute: typeof PortalDemandsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/calendar': {
+      id: '/portal/calendar'
+      path: '/calendar'
+      fullPath: '/portal/calendar'
+      preLoaderRoute: typeof PortalCalendarRouteImport
+      parentRoute: typeof PortalRoute
     }
     '/app/team': {
       id: '/app/team'
@@ -475,10 +683,40 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface PortalRouteChildren {
+  PortalCalendarRoute: typeof PortalCalendarRoute
+  PortalDemandsRoute: typeof PortalDemandsRoute
+  PortalFilesRoute: typeof PortalFilesRoute
+  PortalFinanceRoute: typeof PortalFinanceRoute
+  PortalLoginRoute: typeof PortalLoginRoute
+  PortalObservationsRoute: typeof PortalObservationsRoute
+  PortalPaymentsRoute: typeof PortalPaymentsRoute
+  PortalProfileRoute: typeof PortalProfileRoute
+  PortalServicesRoute: typeof PortalServicesRoute
+  PortalIndexRoute: typeof PortalIndexRoute
+}
+
+const PortalRouteChildren: PortalRouteChildren = {
+  PortalCalendarRoute: PortalCalendarRoute,
+  PortalDemandsRoute: PortalDemandsRoute,
+  PortalFilesRoute: PortalFilesRoute,
+  PortalFinanceRoute: PortalFinanceRoute,
+  PortalLoginRoute: PortalLoginRoute,
+  PortalObservationsRoute: PortalObservationsRoute,
+  PortalPaymentsRoute: PortalPaymentsRoute,
+  PortalProfileRoute: PortalProfileRoute,
+  PortalServicesRoute: PortalServicesRoute,
+  PortalIndexRoute: PortalIndexRoute,
+}
+
+const PortalRouteWithChildren =
+  PortalRoute._addFileChildren(PortalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  PortalRoute: PortalRouteWithChildren,
   SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
