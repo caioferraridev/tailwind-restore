@@ -15,7 +15,7 @@ import AudienceSection from "@/components/landing/AudienceSection";
 import TechStackSection from "@/components/landing/TechStackSection";
 import FinalCtaSection from "@/components/landing/FinalCtaSection";
 import Footer from "@/components/landing/Footer";
-
+import PricingSection from "@/components/landing/PricingSection";
 export const Route = createFileRoute("/")({
   component: Landing,
 });
@@ -65,7 +65,10 @@ function Landing() {
           <HeroVisual />
         </div>
       </section>
+      <PricingSection />
 
+      <ProblemSection />
+      
       <ProblemSection />
       <ModulesSection />
       <ProductShowcase />
@@ -73,6 +76,7 @@ function Landing() {
       <AutomationsSection />
       <AudienceSection />
       <TechStackSection />
+      <PricingSection />
       <FinalCtaSection />
       <Footer />
     </div>

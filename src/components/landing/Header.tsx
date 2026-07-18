@@ -25,6 +25,9 @@ export default function Header() {
           <a href="#diferenciais" className="hover:text-foreground transition-colors">
             Diferenciais
           </a>
+          <a href="#planos" className="hover:text-foreground transition-colors">
+            Planos
+          </a>
         </nav>
 
         <div className="flex gap-2">

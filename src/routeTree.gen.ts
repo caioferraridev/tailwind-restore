@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PortalRouteImport } from './routes/portal'
+import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
@@ -49,6 +50,11 @@ const SignupRoute = SignupRouteImport.update({
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentRoute = PaymentRouteImport.update({
+  id: '/payment',
+  path: '/payment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/payment': typeof PaymentRoute
   '/portal': typeof PortalRouteWithChildren
   '/signup': typeof SignupRoute
   '/app/activity': typeof AppActivityRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/payment': typeof PaymentRoute
   '/signup': typeof SignupRoute
   '/app/activity': typeof AppActivityRoute
   '/app/calendar': typeof AppCalendarRoute
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/payment': typeof PaymentRoute
   '/portal': typeof PortalRouteWithChildren
   '/signup': typeof SignupRoute
   '/app/activity': typeof AppActivityRoute
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/payment'
     | '/portal'
     | '/signup'
     | '/app/activity'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/payment'
     | '/signup'
     | '/app/activity'
     | '/app/calendar'
@@ -363,6 +374,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/payment'
     | '/portal'
     | '/signup'
     | '/app/activity'
@@ -397,6 +409,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PaymentRoute: typeof PaymentRoute
   PortalRoute: typeof PortalRouteWithChildren
   SignupRoute: typeof SignupRoute
 }
@@ -415,6 +428,13 @@ declare module '@tanstack/react-router' {
       path: '/portal'
       fullPath: '/portal'
       preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment': {
+      id: '/payment'
+      path: '/payment'
+      fullPath: '/payment'
+      preLoaderRoute: typeof PaymentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -716,6 +736,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  PaymentRoute: PaymentRoute,
   PortalRoute: PortalRouteWithChildren,
   SignupRoute: SignupRoute,
 }
